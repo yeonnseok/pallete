@@ -1,0 +1,6 @@
+logging:
+  level:
+    se.ohou.commerce.consumer: info
+    org.springframework.cloud.task: info
+    reactor.netty.http.server.AccessLog: warn
+    org.apache.kafka.clients: warn

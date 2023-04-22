@@ -1,0 +1,39 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: mongo
+  health:
+    mongo:
+      enabled: true
+
+server:
+  port: 50051 # grpc health check port
+  shutdown: graceful
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always
+
+armeria:
+  http2-max-header-list-size: 100000
+  http1-max-header-size: 100000
+  ports:
+    - port: 8080
+      protocol: HTTP
+
+grpc:
+  docs:
+    enabled: true
+
+logging:
+  level:
+    root: debug

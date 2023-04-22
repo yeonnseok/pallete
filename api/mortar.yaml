@@ -1,0 +1,46 @@
+apiVersion: v1
+name: sample-service # TODO: 서비스 이름 변경
+namespace: commerce # 서비스 네임 스페이스 TODO: 네임스페이스 변경
+group: commerce # 소유 팀 정보 TODO: 팀 이름 변경
+version: 0.0 # <major>.<minor>
+type: Service # 서비스 타입 ['Service', 'Library', 'External'] 중 하나
+description: |-
+
+
+protos: # protobuf IDL 파일들이 있는 장소
+  includes:
+    - base: protos
+      pattern: "**/*.proto"
+  imports: # Ohouse 내부에서 제공하는 패키지 의존성, 기본값 없음.
+    - namespace: googleapis
+      name: api-common-protos
+      version: 1.50.0
+
+gen: # 코드 생성 설정, 기본값 없음.
+  grpc:
+    server: kotlin
+    clients:
+      - kotlin
+  doc:
+    - html
+
+build:
+  cmd: |-
+    ls -al
+    "ps"
+    ../gradlew bootJar -i
+
+image: # 도커 파일 이미지 생성 및 저장소로 배포
+  dockerfile: docker/Dockerfile
+  target: # 리포지토리에 push할 target 이미지, 기본값 app
+    - app
+  repo: ""  # TODO: 레포명 변경 {namespace/service-name}
+  args:
+    MODULE: api
+    JAR: api.jar
+
+metadata:
+  gitrepo: https://github.com/bucketplace/{sample-service-repo} # TODO: 레포 address
+  envs:
+    - name: local
+      endpoint: http://lvh.me:8080
