@@ -15,7 +15,6 @@ import io.grpc.reflection.v1alpha.ServerReflectionGrpc
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.util.Optional
 
 @Configuration
 class ArmeriaConfig {
@@ -24,26 +23,26 @@ class ArmeriaConfig {
     fun armeriaServerConfigurator(
         bindableServices: List<BindableService>,
         grpcStatusFunctionMappers: List<GrpcStatusFunctionMapper>,
-        armeriaServerCustomizer: Optional<ArmeriaServerCustomizer>,
-        @Value("\${clay.armeria.docs.enabled:true}") docsEnabled: Boolean,
+        armeriaServerCustomizer: ArmeriaServerCustomizer?,
+        @Value("\${grpc.docs.enabled:true}") docsEnabled: Boolean,
     ): ArmeriaServerConfigurator =
         ArmeriaServerConfigurator { serverBuilder ->
+
             if (bindableServices.isEmpty()) {
                 return@ArmeriaServerConfigurator
             }
 
-            val builder = armeriaServerCustomizer.map {
-                it.initializeGrpcServiceBuilder(bindableServices, grpcStatusFunctionMappers)
-            }.orElseGet {
-                defaultGrpcBuilder(bindableServices, grpcStatusFunctionMappers)
-            }
+            val builder = armeriaServerCustomizer?.initializeGrpcServiceBuilder(
+                bindableServices,
+                grpcStatusFunctionMappers,
+            ) ?: defaultGrpcBuilder(bindableServices, grpcStatusFunctionMappers)
 
             // https://cloud.google.com/blog/topics/developers-practitioners/health-checking-your-grpc-servers-gke
             // grpc_health_probe의 요청에 대한 응답을 Armeria 서버 상태에 맞게 처리합니다.
             val manager = HealthStatusManager().apply {
                 setStatus(
                     HealthStatusManager.SERVICE_NAME_ALL_SERVICES,
-                    HealthCheckResponse.ServingStatus.NOT_SERVING
+                    HealthCheckResponse.ServingStatus.NOT_SERVING,
                 )
             }
             serverBuilder.serverListener(
@@ -51,18 +50,18 @@ class ArmeriaConfig {
                     .whenStarted {
                         manager.setStatus(
                             HealthStatusManager.SERVICE_NAME_ALL_SERVICES,
-                            HealthCheckResponse.ServingStatus.SERVING
+                            HealthCheckResponse.ServingStatus.SERVING,
                         )
                     }.whenStopping {
                         manager.setStatus(
                             HealthStatusManager.SERVICE_NAME_ALL_SERVICES,
-                            HealthCheckResponse.ServingStatus.NOT_SERVING
+                            HealthCheckResponse.ServingStatus.NOT_SERVING,
                         )
-                    }.build()
+                    }.build(),
             )
             builder.addService(manager.healthService)
 
-            armeriaServerCustomizer.map { it.customizeGrpcServiceBuilder(builder) }
+            armeriaServerCustomizer?.apply { this.customizeGrpcServiceBuilder(builder) }
 
             serverBuilder.service(
                 builder.build(),
@@ -74,19 +73,19 @@ class ArmeriaConfig {
                     DocService.builder()
                         .exclude(
                             DocServiceFilter.ofServiceName(ServerReflectionGrpc.SERVICE_NAME)
-                                .or(DocServiceFilter.ofServiceName(HealthGrpc.SERVICE_NAME))
+                                .or(DocServiceFilter.ofServiceName(HealthGrpc.SERVICE_NAME)),
                         )
-                        .build()
+                        .build(),
                 )
             }
 
-            armeriaServerCustomizer.map { it.customizeServerBuilder(serverBuilder) }
+            armeriaServerCustomizer?.apply { this.customizeServerBuilder(serverBuilder) }
         }
 
     companion object {
         fun defaultGrpcBuilder(
             bindableServices: List<BindableService>,
-            grpcStatusFunctionMappers: List<GrpcStatusFunctionMapper>
+            grpcStatusFunctionMappers: List<GrpcStatusFunctionMapper>,
         ): GrpcServiceBuilder =
             GrpcService.builder()
                 // DocService 에서 json 으로 gRPC 요청을 보낼수 있게 합니다.

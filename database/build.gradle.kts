@@ -20,7 +20,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:general")
     implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
-        exclude("org.mongodb", "mongo-java-driver") // Compile error in MongoMetricsConnectionPoolListener
+        exclude("org.mongodb", "mongo-java-driver")
     }
 }
 

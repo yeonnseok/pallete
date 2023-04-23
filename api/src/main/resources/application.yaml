@@ -15,8 +15,26 @@ management:
     mongo:
       enabled: true
 
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb+srv://Cluster37916:ynsk0603@Cluster37916.genytgw.mongodb.net/}
+      database: ${MONGO_DATABASE:pallete}
+  redis:
+    redisson:
+      config: |
+        masterSlaveServersConfig:
+          timeout: 3000
+          password: null
+          readMode: "SLAVE"
+          subscriptionMode: "SLAVE"
+          slaveAddresses:
+            - "redis://127.0.0.1:6379"
+          masterAddress: "redis://127.0.0.1:6379"
+          database: 0
+
 server:
-  port: 50051 # grpc health check port
+  port: 8080
   shutdown: graceful
   error:
     include-message: always

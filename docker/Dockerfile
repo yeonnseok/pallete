@@ -14,7 +14,6 @@ ENV APP_PROFILE=${APP_PROFILE} \
     JAR=${JAR}
 
 WORKDIR /app
-RUN curl -Lso dd-java-agent.jar https://dtdg.co/latest-java-tracer
 
 # copy library
 WORKDIR /app

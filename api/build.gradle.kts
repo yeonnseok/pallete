@@ -6,47 +6,55 @@ val redissonVersion: String by project
 
 object Versions {
     const val armeria = "1.14.0"
-    const val grpc = "1.44.0"
-    const val grpcKotlin = "1.1.0"
+    const val grpcProto = "1.44.0"
+    const val grpc = "3.19.6"
+    const val grpcKotlin = "1.2.1"
     const val protobuf = "3.18.1"
-    const val protobuf_gradle = "0.8.17"
 }
 object TestVersions {
     const val kotestVersion = "5.4.2"
 }
 
 protobuf {
-    generatedFilesBaseDir = "$projectDir/build/generated/source"
+    generatedFilesBaseDir = "$projectDir/build/generated"
     protoc {
-        artifact = "com.google.protobuf:protoc:${Versions.protobuf}"
+        artifact = "com.google.protobuf:protoc:${Versions.grpc}"
     }
+
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:${Versions.grpc}"
+            artifact = "io.grpc:protoc-gen-grpc-java:${Versions.grpcProto}"
         }
         id("grpckt") {
             artifact = "io.grpc:protoc-gen-grpc-kotlin:${Versions.grpcKotlin}:jdk7@jar"
         }
     }
+
     generateProtoTasks {
-        ofSourceSet("main").forEach {
+        all().forEach {
             it.plugins {
                 id("grpc")
                 id("grpckt")
             }
+            it.builtins {
+                id("kotlin")
+            }
+
             it.generateDescriptorSet = true
             it.descriptorSetOptions.includeSourceInfo = true
             it.descriptorSetOptions.includeImports = true
             it.descriptorSetOptions.path = "$buildDir/resources/META-INF/armeria/grpc/service-name.dsc"
         }
     }
-}
 
-sourceSets.main {
-    proto.srcDir("$projectDir/protos")
-    java.srcDirs("src/main/java", "build/generated/java")
-    withConvention(org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet::class) {
-        kotlin.srcDirs("src/main/kotlin", "build/generated/kotlin")
+    sourceSets.main {
+        proto.srcDir("$projectDir/protos")
+        java {
+            srcDirs(
+                "build/generated/source/proto/main/java",
+                "build/generated/source/proto/main/kotlin",
+            )
+        }
     }
 }
 
@@ -55,24 +63,27 @@ dependencies {
 
     // armeria
     implementation("com.linecorp.armeria:armeria:${Versions.armeria}")
-    implementation("com.linecorp.armeria:armeria-spring-boot2-starter:${Versions.armeria}")
-    implementation("com.linecorp.armeria:armeria-tomcat9:${Versions.armeria}")
+    implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${Versions.armeria}")
+    implementation("com.linecorp.armeria:armeria-netty:${Versions.armeria}")
     implementation("com.linecorp.armeria:armeria-grpc:${Versions.armeria}")
 
     // gRPC
+    implementation(platform("io.grpc:grpc-bom:${Versions.grpcProto}"))
+    implementation("io.grpc:grpc-kotlin-stub:${Versions.grpcKotlin}")
+    implementation("io.grpc:grpc-stub:${Versions.grpcProto}")
+    implementation("io.grpc:grpc-protobuf:${Versions.grpcProto}")
+    implementation("io.grpc:grpc-netty-shaded:${Versions.grpcProto}")
     implementation("io.github.lognet:grpc-spring-boot-starter:4.6.0")
-    implementation("io.grpc:grpc-kotlin-stub:1.1.0")
-    implementation("io.grpc:grpc-stub:${Versions.grpc}")
-    implementation("io.grpc:grpc-netty-shaded:${Versions.grpc}")
-    implementation("com.google.protobuf:protobuf-java-util:${Versions.protobuf}")
+    implementation("com.google.protobuf:protobuf-java-util:${Versions.grpc}")
+    implementation("com.google.protobuf:protobuf-kotlin:${Versions.grpc}")
     implementation("com.google.protobuf:protobuf-java")
     implementation("com.google.api.grpc:proto-google-common-protos")
-    implementation("com.google.protobuf:protobuf-gradle-plugin:${Versions.protobuf_gradle}")
+    implementation("com.google.protobuf:protobuf-gradle-plugin:0.8.17")
 
     // spring
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
 
     // redis
     implementation("org.redisson:redisson-spring-boot-starter:$redissonVersion")
@@ -89,7 +100,7 @@ dependencies {
     // querydsl
     kapt("com.querydsl:querydsl-apt:$querydslVersion:general")
     implementation("com.querydsl:querydsl-mongodb:$querydslVersion") {
-        exclude("org.mongodb", "mongo-java-driver") // Compile error in MongoMetricsConnectionPoolListener
+        exclude("org.mongodb", "mongo-java-driver")
     }
 
     implementation("io.projectreactor.tools:blockhound:1.0.6.RELEASE")
@@ -112,6 +123,11 @@ configurations.forEach {
 }
 
 tasks {
+
+    register<Copy>("copyDescriptorSet") {
+        from(layout.buildDirectory.dir("generated/image.bin"))
+        into(layout.buildDirectory.dir("resources/main/META-INF/armeria/grpc"))
+    }
 
     withType<KotlinCompile> {
         kotlinOptions {
