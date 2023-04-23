@@ -9,15 +9,15 @@ plugins {
     kotlin("kapt") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 
+    id("com.google.protobuf") version "0.9.0"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.springframework.boot") version "2.7.1"
     id("jacoco")
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
-    id("se.ohou.mortar.plugin") version "1.+"
     idea
 }
 
-group = "se.ohou.commerce"
+group = "kr.co.pallete"
 version = "1.0-SNAPSHOT"
 
 object TestVersions {
@@ -48,10 +48,8 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://plugins.gradle.org/m2/")
-        maven(url = "https://nexus.co-workerhou.se/repository/maven-releases")
-        maven(url = "https://nexus.co-workerhou.se/repository/maven-snapshots")
-        maven(url = "https://nexus.co-workerhou.se/repository/maven-public")
         mavenLocal()
+        gradlePluginPortal()
     }
 
     tasks {
@@ -85,11 +83,12 @@ subprojects {
         plugin("org.jetbrains.kotlin.plugin.allopen")
         plugin("org.jetbrains.kotlin.plugin.noarg")
         plugin("jacoco")
+        plugin("com.google.protobuf")
     }
 
     // 그룹이 동일하면 같은 이름의 모듈(ex. :common:api-model, :hashtag:api-model)이 dependency에 함께 추가되는 경우에
     // conflict(Circular dependency)가 발생할 수 있어서 그룹을 다르게 만든다.
-    group = "se.ohou.commerce.${path.split(":")[1]}"
+    group = "kr.co.pallete.${path.split(":")[1]}"
     version = "0.0.1-SNAPSHOT"
 
     tasks {

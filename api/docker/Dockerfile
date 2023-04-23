@@ -5,7 +5,6 @@ ENV APP_PROFILE=${APP_PROFILE} \
     TZ=Asia/Seoul
 
 WORKDIR /app
-RUN curl -Lso dd-java-agent.jar https://dtdg.co/latest-java-tracer
 
 # copy library
 WORKDIR /app
