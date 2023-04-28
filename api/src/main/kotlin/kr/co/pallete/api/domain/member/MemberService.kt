@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class MemberService(
-    private val memberRepository: MemberRepository,
+    val memberRepository: MemberRepository,
 ) {
     suspend fun getMember(id: String): Member {
         return memberRepository.findById(ObjectId(id))

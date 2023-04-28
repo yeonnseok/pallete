@@ -1,4 +1,4 @@
-package kr.co.pallete.api.interfaces
+package kr.co.pallete.api.interfaces.mappers
 
 import kr.co.pallete.api.v1.member.member
 import kr.co.pallete.database.document.Member

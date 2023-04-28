@@ -13,3 +13,8 @@ message Member {
   string email = 3;
   int32 age = 4;
 }
+
+message SimpleMember {
+  string id = 1;
+  string name = 2;
+}

@@ -1,0 +1,42 @@
+syntax = "proto3";
+package kr.co.pallete.api.v1.member;
+
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+import "v1/ranking/ranking.proto";
+
+option java_multiple_files = true;
+option java_package = "kr.co.pallete.api.v1.ranking";
+option java_outer_classname = "RankingServiceProtos";
+
+service RankingService {
+  rpc GetRankingBoard (GetRankingBoardRequest) returns (GetRankingBoardResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rankings"
+    };
+  }
+
+  rpc GetRanking (GetRankingRequest) returns (GetRankingResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/rankings/{ranking_type}/{id}"
+    };
+  }
+}
+
+message GetRankingBoardRequest {
+  Ranking.RankingType ranking_type = 1;
+  google.protobuf.Int32Value limit = 2;
+}
+
+message GetRankingBoardResponse {
+  repeated Ranking rankings = 1;
+}
+
+message GetRankingRequest {
+  Ranking.RankingType ranking_type = 1;
+  string id = 2;
+}
+
+message GetRankingResponse {
+  Ranking ranking = 1;
+}

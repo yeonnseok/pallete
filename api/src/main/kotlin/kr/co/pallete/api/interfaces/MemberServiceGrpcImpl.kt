@@ -1,7 +1,7 @@
 package kr.co.pallete.api.interfaces
 
 import kr.co.pallete.api.domain.member.MemberService
-import kr.co.pallete.api.interfaces.MemberProtoMapper.toProto
+import kr.co.pallete.api.interfaces.mappers.MemberProtoMapper.toProto
 import kr.co.pallete.api.supports.cache.MemberCacheService
 import kr.co.pallete.api.v1.member.GetMemberRequest
 import kr.co.pallete.api.v1.member.GetMemberResponse
@@ -15,6 +15,7 @@ class MemberServiceGrpcImpl(
     val memberService: MemberService,
     val cacheService: MemberCacheService,
 ) : MemberServiceGrpcKt.MemberServiceCoroutineImplBase() {
+
     override suspend fun getMember(request: GetMemberRequest): GetMemberResponse {
         return cacheService.getProtoBufData(request, GetMemberResponse::class.java) ?: let {
             val id = request.id
@@ -23,8 +24,12 @@ class MemberServiceGrpcImpl(
             getMemberResponse {
                 this.member = member.toProto()
             }.also {
-                cacheService.setProtoBufData(request, it, Duration.ofSeconds(20))
+                cacheService.setProtoBufData(request, it, Duration.ofSeconds(MEMBER_PROTO_CACHE_EXPIRE_TIME))
             }
         }
+    }
+
+    companion object {
+        const val MEMBER_PROTO_CACHE_EXPIRE_TIME = 60L
     }
 }

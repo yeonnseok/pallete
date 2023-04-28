@@ -7,18 +7,15 @@ import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.withContext
 import kr.co.pallete.api.supports.logging.Loggable
-import kr.co.pallete.api.v1.member.GetMemberRequest
-import kr.co.pallete.api.v1.member.GetMemberResponse
 import org.redisson.api.RedissonReactiveClient
 import org.redisson.client.codec.ByteArrayCodec
-import org.springframework.stereotype.Component
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-abstract class CacheServiceImpl<T : Message, K>(
+abstract class ProtoCacheServiceImpl<T : Message, K>(
     private val redissonClient: RedissonReactiveClient,
     private val iODispatcher: CoroutineDispatcher,
-) : Loggable, CacheService<T, K> {
+) : Loggable, ProtoCacheService<T, K> {
     abstract val keySelector: (K) -> String
 
     override suspend fun <T : MessageLite> getProtoBufData(keySource: K, type: Class<T>): T? =
@@ -62,12 +59,4 @@ abstract class CacheServiceImpl<T : Message, K>(
             log.error("### [Pallete CACHE] cache clear failed: ${e.message}", e)
         }
     }
-}
-
-@Component
-class MemberCacheService(
-    redissonClient: RedissonReactiveClient,
-    iODispatcher: CoroutineDispatcher,
-) : CacheServiceImpl<GetMemberResponse, GetMemberRequest>(redissonClient, iODispatcher) {
-    override val keySelector: (GetMemberRequest) -> String = { "member:${it.id}" }
 }

@@ -28,7 +28,15 @@ data class Member(
 
     val password: String,
 
+    val gender: Gender,
+
     val age: Int,
 
-    val score: Long,
-)
+    val score: Float,
+) {
+    enum class Gender {
+        MALE,
+        FEMALE,
+        OTHER,
+    }
+}
