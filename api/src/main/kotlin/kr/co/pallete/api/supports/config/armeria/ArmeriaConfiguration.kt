@@ -9,7 +9,6 @@ import io.grpc.BindableService
 import io.grpc.protobuf.services.ProtoReflectionService
 import io.grpc.reflection.v1alpha.ServerReflectionGrpc
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import com.linecorp.armeria.server.grpc.GrpcService as GRPCService

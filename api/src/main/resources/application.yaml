@@ -18,19 +18,19 @@ management:
 spring:
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb+srv://Cluster37916:ynsk0603@Cluster37916.genytgw.mongodb.net/}
+      uri: ${MONGO_URI:mongodb://localhost:27017}
       database: ${MONGO_DATABASE:pallete}
   redis:
     redisson:
       config: |
-        masterSlaveServersConfig:
+        singleServerConfig:
+          idleConnectionTimeout: 10000
+          connectTimeout: 10000
           timeout: 3000
+          retryAttempts: 3
+          retryInterval: 1500
           password: null
-          readMode: "SLAVE"
-          subscriptionMode: "SLAVE"
-          slaveAddresses:
-            - "redis://127.0.0.1:6379"
-          masterAddress: "redis://127.0.0.1:6379"
+          address: "redis://127.0.0.1:6379"
           database: 0
 
 server:

@@ -64,7 +64,6 @@ dependencies {
     // armeria
     implementation("com.linecorp.armeria:armeria:${Versions.armeria}")
     implementation("com.linecorp.armeria:armeria-spring-boot2-webflux-starter:${Versions.armeria}")
-    implementation("com.linecorp.armeria:armeria-netty:${Versions.armeria}")
     implementation("com.linecorp.armeria:armeria-grpc:${Versions.armeria}")
 
     // gRPC

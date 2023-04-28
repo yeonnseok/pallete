@@ -27,10 +27,10 @@ abstract class CacheServiceImpl<T : Message, K>(
                 redissonClient.getBucket<ByteArray>(keySelector.invoke(keySource), ByteArrayCodec.INSTANCE)
                     .get()
                     .awaitFirstOrNull()?.let {
-                    val builder = type.getDeclaredMethod("newBuilder").invoke(null) as MessageLite.Builder
-                    builder.mergeFrom(it)
-                    builder.build() as T
-                }
+                        val builder = type.getDeclaredMethod("newBuilder").invoke(null) as MessageLite.Builder
+                        builder.mergeFrom(it)
+                        builder.build() as T
+                    }
             }
         } catch (e: Exception) {
             log.error("### [Pallete CACHE] cache get for ${keySelector.invoke(keySource)} failed: ${e.message}", e)
