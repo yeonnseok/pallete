@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: pallete-auth
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    hikari:
+      poolName: Hikari
+      connection-timeout: 10000
+      idle-timeout: 30000
+      max-lifetime: 300000
+      maximum-pool-size: 10
+      minimum-idle: 10
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+    properties:
+      hibernate:
+        connection:
+          provider_disables_autocommit: true
+        show_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
+        default_batch_fetch_size: 1000
+    defer-datasource-initialization: true
+  sql:
+    init:
+      platform: h2
