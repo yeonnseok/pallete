@@ -12,8 +12,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.provisioning.InMemoryUserDetailsManager
+import org.springframework.security.provisioning.UserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
@@ -28,6 +32,30 @@ class SecurityConfig(
     val authenticationFailureHandler: AuthenticationFailureHandler,
     val authenticationDetailsSource: AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>,
 ) : Loggable {
+
+    @Bean
+    fun users(): UserDetailsManager {
+        val password: String = passwordEncoder().encode("1111")
+
+        val user = User.builder()
+            .username("user")
+            .password(password)
+            .roles("USER")
+            .build()
+
+        val manager = User.builder()
+            .username("manager")
+            .password(password)
+            .roles("MANAGER")
+            .build()
+
+        val admin = User.builder()
+            .username("admin")
+            .password(password)
+            .roles("ADMIN", "MANAGER", "USER")
+            .build()
+        return InMemoryUserDetailsManager(user, manager, admin)
+    }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder =
