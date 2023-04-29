@@ -1,11 +1,32 @@
 package kr.co.pallete.api.supports.config.armeria
 
+import com.linecorp.armeria.common.HttpMethod
 import com.linecorp.armeria.common.grpc.GrpcJsonMarshaller
+import com.linecorp.armeria.server.ServerBuilder
+import com.linecorp.armeria.server.cors.CorsService
 import com.linecorp.armeria.server.grpc.GrpcServiceBuilder
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
-class ArmeriaCustomConfig() : ArmeriaServerCustomizer {
+@EnableConfigurationProperties(CorsAllowProperties::class)
+class ArmeriaCustomConfig(
+    val corsAllowProperties: CorsAllowProperties,
+) : ArmeriaServerCustomizer {
+
+    override fun customizeServerBuilder(builder: ServerBuilder) {
+        val corsService = CorsService.builder(corsAllowProperties.origins)
+            .allowCredentials()
+            .allowNullOrigin()
+            .allowRequestMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+            .allowRequestHeaders("Origin", "Accept", "Content-Type", "X-Requested-With", "X-CSRF-Token")
+            .preflightResponseHeader("x-preflight-cors", "Hello CORS")
+            .newDecorator()
+        builder.decorator(corsService)
+    }
 
     override fun customizeGrpcServiceBuilder(builder: GrpcServiceBuilder) {
         // Reference: https://github.com/line/armeria/pull/1753/files
@@ -20,3 +41,9 @@ class ArmeriaCustomConfig() : ArmeriaServerCustomizer {
             }
     }
 }
+
+@ConstructorBinding
+@ConfigurationProperties(prefix = "cors.allow")
+data class CorsAllowProperties(
+    val origins: List<String>,
+)

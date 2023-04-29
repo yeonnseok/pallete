@@ -5,7 +5,7 @@ val querydslVersion: String by project
 val redissonVersion: String by project
 
 object Versions {
-    const val armeria = "1.14.0"
+    const val armeria = "1.20.3"
     const val grpcProto = "1.44.0"
     const val grpc = "3.19.6"
     const val grpcKotlin = "1.2.1"
