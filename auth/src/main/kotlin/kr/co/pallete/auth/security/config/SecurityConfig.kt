@@ -46,7 +46,6 @@ class SecurityConfig(
         authConfiguration.authenticationManager
 
     @Bean
-    @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain? {
         http
             .authorizeRequests()
