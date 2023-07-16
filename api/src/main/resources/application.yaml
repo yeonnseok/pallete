@@ -16,6 +16,8 @@ management:
       enabled: true
 
 spring:
+  jwt:
+    secret: pallete.love
   data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017}
