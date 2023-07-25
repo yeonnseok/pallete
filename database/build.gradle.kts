@@ -17,6 +17,7 @@ allOpen {
 
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:general")
     implementation("com.querydsl:querydsl-mongodb:$queryDslVersion") {
