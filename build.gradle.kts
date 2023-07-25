@@ -96,7 +96,7 @@ subprojects {
             // 기본 설정에서는 jar 파일 이름도 동일하게 생성될 수 있다. 동일한 jar 이름을 갖는 여러 dependency를 추가하면 오류가 발생하므로
             // 각각의 이름을 다르게 만들어준다.
             archiveFileName.set(
-                project.path.split(":").drop(1).joinToString(separator = "-", postfix = "-") + project.version + ".jar"
+                project.path.split(":").drop(1).joinToString(separator = "-", postfix = "-") + project.version + ".jar",
             )
         }
 
@@ -117,8 +117,8 @@ subprojects {
         // Kotlin
         implementation(kotlin("reflect"))
         implementation(kotlin("stdlib-jdk8"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.4")
+        // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.4")
 
         // kotest
         testImplementation("io.kotest:kotest-runner-junit5:${TestVersions.kotestVersion}")

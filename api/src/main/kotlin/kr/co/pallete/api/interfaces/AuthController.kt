@@ -23,11 +23,11 @@ class AuthController(
 
     @GetMapping("/permitted")
     fun permitted(): String {
-        return "hihihhihi"
+        return "permitted"
     }
 
     @PostMapping("/signup")
-    suspend fun signup( // FIXME suspend 에러 해결 필요
+    suspend fun signup(
         @RequestBody signupRequest: SignupDto.Request,
     ): ResponseEntity<SignupDto.Response> {
         val member = memberService.createMember(signupRequest.toMember(passwordEncoder))
@@ -41,7 +41,7 @@ class AuthController(
         @RequestBody loginRequest: LoginDto.Request,
     ): ResponseEntity<LoginDto.Response> {
         val member = memberService.findMemberByEmail(loginRequest.email)
-        if (!passwordEncoder.matches(loginRequest.password, member.password)) {
+        check(!passwordEncoder.matches(loginRequest.password, member.password)) {
             throw IllegalArgumentException("### password not matched")
         }
 

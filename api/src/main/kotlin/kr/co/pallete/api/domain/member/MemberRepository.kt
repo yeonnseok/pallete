@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono
 interface MemberRepository :
     ReactiveMongoRepository<Member, ObjectId>,
     ReactiveQuerydslPredicateExecutor<Member> {
+
     fun findByGender(male: Member.Gender): Flux<Member>
 
     fun findByEmail(email: String): Mono<Member>

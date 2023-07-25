@@ -18,9 +18,8 @@ class JwtTokenService(
     val secretKey: String,
 ) : Loggable {
     companion object {
-        private const val TOKEN_VALID_MILLI_SECOND = 24 * 60 * 60 * 1000
+        private const val TOKEN_VALID_MILLI_SECOND = 24 * 60 * 60 * 10000
         private const val EMAIL_CLAIM = "email"
-        private const val ROLES_CLAIM = "roles"
         private const val NICKNAME_CLAIM = "nickname"
     }
 
@@ -75,11 +74,11 @@ class JwtTokenService(
             subject = member.name
             this[EMAIL_CLAIM] = member.email
             this[NICKNAME_CLAIM] = member.nickname
-            // this[ROLES_CLAIM] = user.roles.map { it.name } // TODO : token안에 claim으로 넣을지 고민
         }
     }
 
     fun createToken(member: Member): String {
+        println("###member: $member")
         val now = Date()
         return Jwts.builder()
             .setClaims(createClaims(member))

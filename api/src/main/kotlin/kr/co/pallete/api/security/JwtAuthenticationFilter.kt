@@ -3,9 +3,9 @@ package kr.co.pallete.api.security
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.util.Strings
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextImpl
-import org.springframework.security.web.authentication.session.SessionAuthenticationException
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
@@ -29,7 +29,8 @@ class JwtAuthenticationFilter(
                     .awaitFirstOrNull()
             }
         } else {
-            throw SessionAuthenticationException("Invalid JWT token: $token")
+            exchange.response.statusCode = HttpStatus.UNAUTHORIZED
+            return exchange.response.setComplete()
         }
         return chain.filter(exchange)
     }

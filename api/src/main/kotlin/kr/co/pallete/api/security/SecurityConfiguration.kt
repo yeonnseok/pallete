@@ -52,6 +52,7 @@ class SecurityConfiguration(
                     .pathMatchers("/api/v1/auth/permitted").permitAll()
                     .pathMatchers("/api/v1/auth/login").permitAll()
                     .pathMatchers("/api/v1/auth/signup").permitAll()
+                    .pathMatchers("/actuator/**").permitAll()
                     .anyExchange().authenticated()
             }
             // SpringSecurityFilter 가 실행되기 전에 실행할 filter 설정
@@ -77,7 +78,7 @@ class SecurityConfiguration(
                 it.authenticationEntryPoint { exchange, exception ->
                     log.debug("### Error: ${exception.stackTraceToString()}")
                     exchange.response.statusCode = HttpStatus.UNAUTHORIZED
-                    exchange.response.headers.location = URI("/api/v1/auth/login") // getPortalToken 호출
+                    exchange.response.headers.location = URI("/login")
 
                     val dataBufferFactory = exchange.response.bufferFactory()
                     val errorDetails =
